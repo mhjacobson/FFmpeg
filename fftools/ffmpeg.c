@@ -3501,12 +3501,14 @@ static OutputStream *choose_output(void)
                 "cur_dts is invalid st:%d (%d) [init:%d i_done:%d finish:%d] (this is harmless if it occurs once at the start per stream)\n",
                 ost->st->index, ost->st->id, ost->initialized, ost->inputs_done, ost->finished);
 
-        if (!ost->initialized && !ost->inputs_done)
-            return ost->unavailable ? NULL : ost;
+        if (!ost->unavailable) {
+            if (!ost->initialized && !ost->inputs_done)
+                return ost;
 
-        if (!ost->finished && opts < opts_min) {
-            opts_min = opts;
-            ost_min  = ost->unavailable ? NULL : ost;
+            if (!ost->finished && opts < opts_min) {
+                opts_min = opts;
+                ost_min  = ost;
+            }
         }
     }
     return ost_min;
